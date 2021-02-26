@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:hive/hive.dart';
@@ -14,6 +14,7 @@ class ClassBuilder extends Builder {
   var mapChecker = const TypeChecker.fromRuntime(Map);
   var setChecker = const TypeChecker.fromRuntime(Set);
   var iterableChecker = const TypeChecker.fromRuntime(Iterable);
+  var iListChecker = const TypeChecker.fromRuntime(IList);
   var uint8ListChecker = const TypeChecker.fromRuntime(Uint8List);
 
   ClassBuilder(
@@ -82,7 +83,7 @@ class ClassBuilder extends Builder {
     return listChecker.isExactlyType(type) ||
         setChecker.isExactlyType(type) ||
         iterableChecker.isExactlyType(type) ||
-        mapChecker.isExactlyType(type);
+        mapChecker.isExactlyType(type) || iListChecker.isExactlyType(type);
   }
 
   bool isUint8List(DartType type) {
@@ -98,10 +99,13 @@ class ClassBuilder extends Builder {
         cast = '?.toList()';
       } else if (setChecker.isExactlyType(type)) {
         cast = '?.toSet()';
+      } if (iListChecker.isExactlyType(type)) {
+        cast = '?.toIList()';
       }
       return '?.map((dynamic e)=> ${_cast(arg, 'e')})$cast';
     } else {
-      return '?.cast<${_displayString(arg)}>()';
+      var iListCast = iListChecker.isExactlyType(type) ? '?.toIList()' : '';
+      return '?.cast<${_displayString(arg)}>()$iListCast';
     }
   }
 
@@ -135,7 +139,8 @@ class ClassBuilder extends Builder {
   }
 
   String _convertIterable(DartType type, String accessor) {
-    if (setChecker.isExactlyType(type) || iterableChecker.isExactlyType(type)) {
+    if (setChecker.isExactlyType(type) || iterableChecker.isExactlyType(type)
+      || iListChecker.isExactlyType(type)) {
       return '$accessor?.toList()';
     } else {
       return accessor;
