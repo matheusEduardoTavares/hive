@@ -11,12 +11,13 @@ dependencies:
   flutter:
     sdk: flutter
 
-  hive: ^1.0.0
-  path_provider: ^1.0.0
+  hive: 
+    path: ../hive
   path: ^1.6.0
+  path_provider: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ">=1.8.0 <2.0.0"
   mockito: ^4.1.1
+  pedantic: ">=1.8.0 <2.0.0"
