@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:hive/hive.dart';
 import 'package:hive/src/binary/frame.dart';
 import 'package:hive/src/crypto/crc32.dart';
@@ -297,7 +298,7 @@ class BinaryWriterImpl extends BinaryWriter {
         writeByte(FrameValueType.stringT);
       }
       writeString(value);
-    } else if (value is List) {
+    } else if (value is List || value is IList) {
       _writeList(value, writeTypeId: writeTypeId);
     } else if (value is Map) {
       if (writeTypeId) {
@@ -319,7 +320,19 @@ class BinaryWriterImpl extends BinaryWriter {
 
   @pragma('vm:prefer-inline')
   @pragma('dart2js:tryInline')
-  void _writeList(List value, {bool writeTypeId = true}) {
+  void _writeList(dynamic data, {bool writeTypeId = true}) {
+    List value;
+
+    if (data is List) {
+      value = data;
+    }
+    else if (data is IList) {
+      value = List.from(data);
+    }
+    else {
+      throw HiveError('Type ${data.runtimeType} is not a "List" or a "IList"');
+    }
+
     if (value is HiveList) {
       if (writeTypeId) {
         writeByte(FrameValueType.hiveListT);
