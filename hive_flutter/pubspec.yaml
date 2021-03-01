@@ -12,12 +12,15 @@ dependencies:
     sdk: flutter
 
   hive: 
-    path: ../hive
-  path: ^1.6.0
+    git:
+      url: https://github.com/matheusEduardoTavares/hive
+      ref: master
+      path: hive
   path_provider: ^1.0.0
+  path: ^1.6.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^4.1.1
   pedantic: ">=1.8.0 <2.0.0"
+  mockito: ^4.1.1
